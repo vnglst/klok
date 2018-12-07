@@ -1,32 +1,93 @@
+.Background {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
 .App {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.Clock {
+  width: 95vmin;
+  height: 95vmin;
+  border: 25px solid white;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+}
+
+.Digit {
+  position: absolute;
+  width: 100%;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: black;
+  user-select: none;
+}
+
+.Digit12 {
+  top: 0;
+  left: 0;
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+.Digit3 {
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: right;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.Digit9 {
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: left;
 }
 
-.App-link {
-  color: #61dafb;
+.Digit6 {
+  bottom: 0;
+  left: 0;
+  text-align: center;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.Face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.Hand {
+  height: 12px;
+  width: 50%;
+  transform-origin: 100%;
+  position: absolute;
+  top: calc(50% - 6px);
+  background-color: #bb0a26;
+  border: none;
+  outline-color: black;
+}
+
+.HandHours {
+  height: 24px;
+  width: 50%;
+  transform-origin: 100%;
+  top: calc(50% - 12px);
+}
+
+.ClockCenter {
+  width: 2rem;
+  height: 2rem;
+  top: calc(50% - 1rem);
+  left: calc(50% - 1rem);
+  border-radius: 50%;
+  background: #ccc;
+  position: absolute;
+  box-shadow: 0 2px 4px -1px black;
 }
