@@ -67,6 +67,22 @@ button:focus {
   border-top-right-radius: 50%;
 }
 
+.hours-line {
+  position: absolute;
+  width: 0px;
+  height: 78px;
+  top: -78px;
+  border: 0.5px dashed red;
+}
+
+.minutes-line {
+  position: absolute;
+  width: 0px;
+  height: 42px;
+  top: -42px;
+  border: 0.5px dashed red;
+}
+
 .minute-hand {
   position: absolute;
   z-index: 6;

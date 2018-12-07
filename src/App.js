@@ -176,13 +176,17 @@ class App extends Component {
                 style={hoursStyle}
                 onMouseDown={e => this.startHandTracking('hours')}
                 onTouchStart={e => this.startHandTracking('hours')}
-              />
+              >
+                {trackHand === 'hours' && <span className="hours-line" />}
+              </button>
               <button
                 className="minute-hand"
                 style={minutesStyle}
                 onMouseDown={e => this.startHandTracking('minutes')}
                 onTouchStart={e => this.startHandTracking('minutes')}
-              />
+              >
+                {trackHand === 'minutes' && <span className="minutes-line" />}
+              </button>
               <div className="second-hand" style={secondsStyle} />
             </div>
             <div>
