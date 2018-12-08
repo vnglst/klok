@@ -16,6 +16,7 @@ Supports:
 */
 
 import React, { useState, useEffect } from 'react'
+import styled from 'styled-components'
 import './App.css'
 import Overlay from './Overlay'
 import Button from './Button'
@@ -33,6 +34,38 @@ function generateState() {
     tracking: 'none'
   }
 }
+
+/* fixed background container to disable view scrolling on mobile */
+const Background = styled.div`
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+`
+
+const AppContent = styled.div`
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+`
+
+const Question = styled.div`
+  margin-top: 50px;
+  width: 300px;
+  border-radius: 7px;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000;
+  font-size: 18px;
+  letter-spacing: 2px;
+  border: 1px solid black;
+  background: white;
+`
 
 function App() {
   const [expectedHours, setExpectedHours] = useState(INIT.expectedHours)
@@ -72,19 +105,19 @@ function App() {
   }
 
   return (
-    <div className="background">
+    <Background>
       {isDone() && (
         <Overlay>
           <Button onClick={resetState}>Well done!</Button>
         </Overlay>
       )}
-      <div className="app">
-        <div className="question">
+      <AppContent>
+        <Question>
           <p>
             set the time to{' '}
             <b>{timeToDigitalStr(expectedHours, expectedMinutes)}</b>
           </p>
-        </div>
+        </Question>
         <Clock
           setTracking={setTracking}
           setHoursHand={setHoursHand}
@@ -94,8 +127,8 @@ function App() {
           secondsHand={secondsHand}
           tracking={tracking}
         />
-      </div>
-    </div>
+      </AppContent>
+    </Background>
   )
 }
 
