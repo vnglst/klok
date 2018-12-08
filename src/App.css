@@ -87,7 +87,7 @@
   border: 0.5px dashed red;
 }
 
-.second-hand {
+.seconds-hand {
   position: absolute;
   z-index: 7;
   width: 2px;

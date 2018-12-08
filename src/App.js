@@ -43,6 +43,20 @@ const generateState = () => {
   }
 }
 
+function renderDialLines() {
+  const dialLines = []
+  for (let i = -1; i < 59; i++) {
+    dialLines.push(
+      <div
+        key={i}
+        className="diallines"
+        style={{ transform: `rotate(${6 * i}deg)` }}
+      />
+    )
+  }
+  return dialLines
+}
+
 const INIT = generateState()
 
 const App = () => {
@@ -59,7 +73,7 @@ const App = () => {
     setInterval(() => {
       setSecondsHand(getSecondsInDegrees())
     }, 1000)
-  })
+  }, [])
 
   const resetState = () => {
     const newState = generateState()
@@ -105,20 +119,6 @@ const App = () => {
     if (tracking === 'minutes') setMinutesHand(angle)
   }
 
-  const renderDialLines = () => {
-    const dialLines = []
-    for (let i = -1; i < 59; i++) {
-      dialLines.push(
-        <div
-          key={i}
-          className="diallines"
-          style={{ transform: `rotate(${6 * i}deg)` }}
-        />
-      )
-    }
-    return dialLines
-  }
-
   const isDone = () => {
     // if user is still dragging hands, she's not done yet
     if (tracking !== 'none') return false
@@ -130,25 +130,6 @@ const App = () => {
       expectedHoursInDegrees === hoursHand &&
       expectedMinutesInDegrees === minutesHand
     )
-  }
-
-  const hoursStyle = {
-    transform: `rotate(${hoursHand}deg)`
-  }
-
-  const minutesStyle = {
-    transform: `rotate(${minutesHand}deg)`
-  }
-
-  const secondsStyle = {
-    transform: `rotate(${secondsHand}deg)`
-  }
-
-  // Dont animate at 12 (0 degrees) as this causes flicker
-  if (secondsHand === 0) {
-    secondsStyle.transition = 'none'
-  } else {
-    secondsStyle.transition = ''
   }
 
   return (
@@ -176,7 +157,9 @@ const App = () => {
           <div>
             <button
               className="hand-button"
-              style={hoursStyle}
+              style={{
+                transform: `rotate(${hoursHand}deg)`
+              }}
               onMouseDown={() => setTracking('hours')}
               onTouchStart={() => setTracking('hours')}
             >
@@ -185,14 +168,23 @@ const App = () => {
             </button>
             <button
               className="hand-button"
-              style={minutesStyle}
+              style={{
+                transform: `rotate(${minutesHand}deg)`
+              }}
               onMouseDown={() => setTracking('minutes')}
               onTouchStart={() => setTracking('minutes')}
             >
               <div className="minute-hand" />
               {tracking === 'minutes' && <span className="hand-helper-line" />}
             </button>
-            <div className="second-hand" style={secondsStyle} />
+            <div
+              className="seconds-hand"
+              style={{
+                transform: `rotate(${secondsHand}deg)`,
+                // Dont animate at 12 (0 degrees) as this causes flicker
+                transition: secondsHand === 0 ? 'none' : ''
+              }}
+            />
           </div>
           <div>
             <span className="hour h3">3</span>
