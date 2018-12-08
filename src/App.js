@@ -24,7 +24,7 @@ class App extends Component {
 
   initialState() {
     return {
-      expectedHours: Math.round(Math.random() * 12),
+      expectedHours: Math.round(Math.random() * 12 + 1),
       expectedMinutes: 0,
       hoursHand: Math.round(Math.random() * 360),
       minutesHand: Math.round(Math.random() * 360),
@@ -67,6 +67,8 @@ class App extends Component {
     const absY = -(clientY - originY)
     let angle = Math.atan2(absX, absY) * (180 / Math.PI)
     if (angle < 0) angle += 360
+
+    angle = Math.round(angle / 3) * 3
 
     if (trackHand === 'hours') this.setState({ hoursHand: angle })
     if (trackHand === 'minutes') this.setState({ minutesHand: angle })
@@ -159,7 +161,7 @@ class App extends Component {
         <div className="app">
           <div className="info">
             <p>
-              set the clock to <b>{expectedHours} O'Clock</b>
+              set the time to <b>{expectedHours} O'Clock</b>
             </p>
           </div>
           <div
