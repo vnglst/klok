@@ -15,7 +15,7 @@ Uses:
 
 */
 
-import React, { Component } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import './App.css'
 import Overlay from './Overlay'
 import Button from './Button'
@@ -31,52 +31,62 @@ const timeToDigitalStr = (hours, minutes) => {
   return `${hours}:${minutesStr}`
 }
 
-class App extends Component {
-  constructor(props) {
-    super(props)
-    this.state = this.generateInitialState()
+const generateState = () => {
+  return {
+    expectedHours: Math.round(Math.random() * 12 + 1), // hours [1 - 12]
+    expectedMinutes: 0, // minutes [0 - 59]
+    hoursHand: Math.round(Math.random() * 360), // in degrees
+    minutesHand: Math.round(Math.random() * 360), // in degrees
+    secondsHand: getSecondsInDegrees(),
+    tracking: 'none'
   }
+}
 
-  generateInitialState() {
-    return {
-      expectedHours: Math.round(Math.random() * 12 + 1), // hours [1 - 12]
-      expectedMinutes: 0, // minutes [0 - 59]
-      hoursHand: Math.round(Math.random() * 360), // in degrees
-      minutesHand: Math.round(Math.random() * 360), // in degrees
-      secondsHand: getSecondsInDegrees(),
-      tracking: 'none'
-    }
-  }
+const INIT = generateState()
 
-  componentDidMount() {
+const App = () => {
+  const [expectedHours, setExpectedHours] = useState(INIT.expectedHours)
+  const [expectedMinutes, setExpectedMinutes] = useState(INIT.expectedMinutes)
+  const [hoursHand, setHoursHand] = useState(INIT.hoursHand)
+  const [minutesHand, setMinutesHand] = useState(INIT.minutesHand)
+  const [secondsHand, setSecondsHand] = useState(INIT.secondsHand)
+  const [tracking, setTracking] = useState(INIT.tracking)
+
+  const origin = useRef(null)
+
+  useEffect(() => {
     setInterval(() => {
-      this.setState({ secondsHand: getSecondsInDegrees() })
+      setSecondsHand(getSecondsInDegrees())
     }, 1000)
+  })
+
+  const resetState = () => {
+    const newState = generateState()
+    setExpectedHours(newState.expectedHours)
+    setExpectedMinutes(newState.expectedMinutes)
+    setHoursHand(newState.hoursHand)
+    setMinutesHand(newState.minutesHand)
+    setSecondsHand(newState.secondsHand)
+    setTracking(newState.tracking)
   }
 
-  resetState = () => {
-    this.setState(this.generateInitialState())
-  }
-
-  handleMouseMove(e) {
+  const handleMouseMove = e => {
     const { clientX, clientY } = e
-    this.handleHandTracking({ clientX, clientY })
+    handleHandTracking({ clientX, clientY })
   }
 
-  handleTouchMove(e) {
+  const handleTouchMove = e => {
     const { clientX, clientY } = e.touches[0]
-    this.handleHandTracking({ clientX, clientY })
+    handleHandTracking({ clientX, clientY })
   }
 
-  handleHandTracking(position) {
-    const { tracking } = this.state
-
+  const handleHandTracking = position => {
     // don't update hands if none selected
     if (tracking === 'none') return
 
     // calculate x and y based on origin in centre of clock
     const { clientX, clientY } = position
-    const { x, y, width, height } = this.origin.getBoundingClientRect()
+    const { x, y, width, height } = origin.current.getBoundingClientRect()
     const originX = Math.round(x + width / 2)
     const originY = Math.round(y + height / 2)
     const absX = clientX - originX
@@ -90,19 +100,11 @@ class App extends Component {
     // convert degrees to positive range [0 - 360)
     angle = (angle + 360) % 360
 
-    if (tracking === 'hours') this.setState({ hoursHand: angle })
-    if (tracking === 'minutes') this.setState({ minutesHand: angle })
+    if (tracking === 'hours') setHoursHand(angle)
+    if (tracking === 'minutes') setMinutesHand(angle)
   }
 
-  startHandTracking(handStr) {
-    this.setState({ tracking: handStr })
-  }
-
-  stopHandTracking(e) {
-    this.setState({ tracking: 'none' })
-  }
-
-  renderDialLines() {
+  const renderDialLines = () => {
     const dialLines = []
     for (let i = -1; i < 59; i++) {
       dialLines.push(
@@ -116,15 +118,7 @@ class App extends Component {
     return dialLines
   }
 
-  isDone = () => {
-    const {
-      hoursHand,
-      minutesHand,
-      tracking,
-      expectedHours,
-      expectedMinutes
-    } = this.state
-
+  const isDone = () => {
     // if user is still dragging hands, she's not done yet
     if (tracking !== 'none') return false
 
@@ -137,92 +131,79 @@ class App extends Component {
     )
   }
 
-  render() {
-    const {
-      hoursHand,
-      minutesHand,
-      secondsHand,
-      tracking,
-      expectedHours,
-      expectedMinutes
-    } = this.state
+  const hoursStyle = {
+    transform: `rotate(${hoursHand}deg)`
+  }
 
-    const hoursStyle = {
-      transform: `rotate(${hoursHand}deg)`
-    }
+  const minutesStyle = {
+    transform: `rotate(${minutesHand}deg)`
+  }
 
-    const minutesStyle = {
-      transform: `rotate(${minutesHand}deg)`
-    }
+  const secondsStyle = {
+    transform: `rotate(${secondsHand}deg)`
+  }
 
-    const secondsStyle = {
-      transform: `rotate(${secondsHand}deg)`
-    }
+  // Dont animate at 12 (0 degrees) as this causes flicker
+  if (secondsHand === 0) {
+    secondsStyle.transition = 'none'
+  } else {
+    secondsStyle.transition = ''
+  }
 
-    // Dont animate at 12 (0 degrees) as this causes flicker
-    if (secondsHand === 0) {
-      secondsStyle.transition = 'none'
-    } else {
-      secondsStyle.transition = ''
-    }
-
-    return (
-      <div className="background">
-        {this.isDone() && (
-          <Overlay>
-            <Button onClick={() => this.resetState()}>Well done!</Button>
-          </Overlay>
-        )}
-        <div className="app">
-          <div className="question">
-            <p>
-              set the time to{' '}
-              <b>{timeToDigitalStr(expectedHours, expectedMinutes)}</b>
-            </p>
+  return (
+    <div className="background">
+      {isDone() && (
+        <Overlay>
+          <Button onClick={() => resetState()}>Well done!</Button>
+        </Overlay>
+      )}
+      <div className="app">
+        <div className="question">
+          <p>
+            set the time to{' '}
+            <b>{timeToDigitalStr(expectedHours, expectedMinutes)}</b>
+          </p>
+        </div>
+        <div
+          className="clock"
+          onMouseUp={() => setTracking('none')}
+          onTouchEnd={() => setTracking('none')}
+          onMouseMove={e => handleMouseMove(e)}
+          onTouchMove={e => handleTouchMove(e)}
+        >
+          <div className="dot" ref={origin} />
+          <div>
+            <button
+              className="hand-button"
+              style={hoursStyle}
+              onMouseDown={() => setTracking('hours')}
+              onTouchStart={() => setTracking('hours')}
+            >
+              <div className="hour-hand" />
+              {tracking === 'hours' && <span className="hand-helper-line" />}
+            </button>
+            <button
+              className="hand-button"
+              style={minutesStyle}
+              onMouseDown={() => setTracking('minutes')}
+              onTouchStart={() => setTracking('minutes')}
+            >
+              <div className="minute-hand" />
+              {tracking === 'minutes' && <span className="hand-helper-line" />}
+            </button>
+            <div className="second-hand" style={secondsStyle} />
           </div>
-          <div
-            className="clock"
-            onMouseUp={e => this.stopHandTracking(e)}
-            onTouchEnd={e => this.stopHandTracking(e)}
-            onMouseMove={e => this.handleMouseMove(e)}
-            onTouchMove={e => this.handleTouchMove(e)}
-          >
-            <div className="dot" ref={el => (this.origin = el)} />
-            <div>
-              <button
-                className="hand-button"
-                style={hoursStyle}
-                onMouseDown={e => this.startHandTracking('hours')}
-                onTouchStart={e => this.startHandTracking('hours')}
-              >
-                <div className="hour-hand" />
-                {tracking === 'hours' && <span className="hand-helper-line" />}
-              </button>
-              <button
-                className="hand-button"
-                style={minutesStyle}
-                onMouseDown={e => this.startHandTracking('minutes')}
-                onTouchStart={e => this.startHandTracking('minutes')}
-              >
-                <div className="minute-hand" />
-                {tracking === 'minutes' && (
-                  <span className="hand-helper-line" />
-                )}
-              </button>
-              <div className="second-hand" style={secondsStyle} />
-            </div>
-            <div>
-              <span className="hour h3">3</span>
-              <span className="hour h6">6</span>
-              <span className="hour h9">9</span>
-              <span className="hour h12">12</span>
-            </div>
-            {this.renderDialLines()}
+          <div>
+            <span className="hour h3">3</span>
+            <span className="hour h6">6</span>
+            <span className="hour h9">9</span>
+            <span className="hour h12">12</span>
           </div>
+          {renderDialLines()}
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 export default App
