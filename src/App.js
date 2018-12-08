@@ -66,9 +66,12 @@ class App extends Component {
     const absX = clientX - originX
     const absY = -(clientY - originY)
     let angle = Math.atan2(absX, absY) * (180 / Math.PI)
+
+    // convert degrees to positive
     if (angle < 0) angle += 360
 
-    angle = Math.round(angle / 3) * 3
+    // snap to grid
+    angle = Math.round(angle / 6) * 6
 
     if (trackHand === 'hours') this.setState({ hoursHand: angle })
     if (trackHand === 'minutes') this.setState({ minutesHand: angle })
