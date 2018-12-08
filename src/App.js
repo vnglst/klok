@@ -13,26 +13,17 @@ Supports:
 - PWA
 - app like mobile experience
 
-
 */
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import Overlay from './Overlay'
 import Button from './Button'
+import Clock from './Clock/Clock'
 
-const getSecondsInDegrees = () => {
-  const now = new Date()
-  const seconds = now.getSeconds()
-  return seconds * 6
-}
+const INIT = generateState()
 
-const timeToDigitalStr = (hours, minutes) => {
-  const minutesStr = `${minutes}`.padStart(2, '0')
-  return `${hours}:${minutesStr}`
-}
-
-const generateState = () => {
+function generateState() {
   return {
     expectedHours: Math.round(Math.random() * 12 + 1), // hours [1 - 12]
     expectedMinutes: 0, // minutes [0 - 59]
@@ -43,31 +34,13 @@ const generateState = () => {
   }
 }
 
-function renderDialLines() {
-  const dialLines = []
-  for (let i = -1; i < 59; i++) {
-    dialLines.push(
-      <div
-        key={i}
-        className="diallines"
-        style={{ transform: `rotate(${6 * i}deg)` }}
-      />
-    )
-  }
-  return dialLines
-}
-
-const INIT = generateState()
-
-const App = () => {
+function App() {
   const [expectedHours, setExpectedHours] = useState(INIT.expectedHours)
   const [expectedMinutes, setExpectedMinutes] = useState(INIT.expectedMinutes)
   const [hoursHand, setHoursHand] = useState(INIT.hoursHand)
   const [minutesHand, setMinutesHand] = useState(INIT.minutesHand)
   const [secondsHand, setSecondsHand] = useState(INIT.secondsHand)
   const [tracking, setTracking] = useState(INIT.tracking)
-
-  const origin = useRef(null)
 
   useEffect(() => {
     setInterval(() => {
@@ -83,40 +56,6 @@ const App = () => {
     setMinutesHand(newState.minutesHand)
     setSecondsHand(newState.secondsHand)
     setTracking(newState.tracking)
-  }
-
-  const handleMouseMove = e => {
-    const { clientX, clientY } = e
-    handleHandTracking({ clientX, clientY })
-  }
-
-  const handleTouchMove = e => {
-    const { clientX, clientY } = e.touches[0]
-    handleHandTracking({ clientX, clientY })
-  }
-
-  const handleHandTracking = position => {
-    // don't update hands if none selected
-    if (tracking === 'none') return
-
-    // calculate x and y based on origin in centre of clock
-    const { clientX, clientY } = position
-    const { x, y, width, height } = origin.current.getBoundingClientRect()
-    const originX = Math.round(x + width / 2)
-    const originY = Math.round(y + height / 2)
-    const absX = clientX - originX
-    const absY = -(clientY - originY)
-
-    let angle = Math.atan2(absX, absY) * (180 / Math.PI)
-
-    // snap to dial lines
-    angle = Math.round(angle / 6) * 6
-
-    // convert degrees to positive range [0 - 360)
-    angle = (angle + 360) % 360
-
-    if (tracking === 'hours') setHoursHand(angle)
-    if (tracking === 'minutes') setMinutesHand(angle)
   }
 
   const isDone = () => {
@@ -136,7 +75,7 @@ const App = () => {
     <div className="background">
       {isDone() && (
         <Overlay>
-          <Button onClick={() => resetState()}>Well done!</Button>
+          <Button onClick={resetState}>Well done!</Button>
         </Overlay>
       )}
       <div className="app">
@@ -146,57 +85,29 @@ const App = () => {
             <b>{timeToDigitalStr(expectedHours, expectedMinutes)}</b>
           </p>
         </div>
-        <div
-          className="clock"
-          onMouseUp={() => setTracking('none')}
-          onTouchEnd={() => setTracking('none')}
-          onMouseMove={e => handleMouseMove(e)}
-          onTouchMove={e => handleTouchMove(e)}
-        >
-          <div className="dot" ref={origin} />
-          <div>
-            <button
-              className="hand-button"
-              style={{
-                transform: `rotate(${hoursHand}deg)`
-              }}
-              onMouseDown={() => setTracking('hours')}
-              onTouchStart={() => setTracking('hours')}
-            >
-              <div className="hour-hand" />
-              {tracking === 'hours' && <span className="hand-helper-line" />}
-            </button>
-            <button
-              className="hand-button"
-              style={{
-                transform: `rotate(${minutesHand}deg)`
-              }}
-              onMouseDown={() => setTracking('minutes')}
-              onTouchStart={() => setTracking('minutes')}
-            >
-              <div className="minute-hand" />
-              {tracking === 'minutes' && <span className="hand-helper-line" />}
-            </button>
-            <div
-              className="seconds-hand"
-              style={{
-                transform: `rotate(${secondsHand}deg)`,
-                // Dont animate at 12 (0 degrees) as this causes flicker
-                transition: secondsHand === 0 ? 'none' : ''
-              }}
-            />
-          </div>
-          <div>
-            <span className="hour h3">3</span>
-            <span className="hour h6">6</span>
-            <span className="hour h9">9</span>
-            <span className="hour h12">12</span>
-          </div>
-          {renderDialLines()}
-        </div>
+        <Clock
+          setTracking={setTracking}
+          setHoursHand={setHoursHand}
+          setMinutesHand={setMinutesHand}
+          hoursHand={hoursHand}
+          minutesHand={minutesHand}
+          secondsHand={secondsHand}
+          tracking={tracking}
+        />
       </div>
     </div>
   )
+}
+
+function getSecondsInDegrees() {
+  const now = new Date()
+  const seconds = now.getSeconds()
+  return seconds * 6
+}
+
+function timeToDigitalStr(hours, minutes) {
+  const minutesStr = `${minutes}`.padStart(2, '0')
+  return `${hours}:${minutesStr}`
 }
 
 export default App
