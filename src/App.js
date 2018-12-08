@@ -17,7 +17,7 @@ Supports:
 
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import './App.css'
+
 import Overlay from './Overlay'
 import Button from './Button'
 import Clock from './Clock'
