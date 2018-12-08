@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import styles from './Clock.module.css'
 
 function Clock({
   setTracking,
@@ -47,38 +48,42 @@ function Clock({
 
   return (
     <div
-      className="clock"
+      className={styles.clock}
       onMouseUp={() => setTracking('none')}
       onTouchEnd={() => setTracking('none')}
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
     >
-      <div className="dot" ref={origin} />
+      <div className={styles.dot} ref={origin} />
       <div>
         <button
-          className="hand-button"
+          className={styles['hand-button']}
           style={{
             transform: `rotate(${hoursHand}deg)`
           }}
           onMouseDown={() => setTracking('hours')}
           onTouchStart={() => setTracking('hours')}
         >
-          <div className="hour-hand" />
-          {tracking === 'hours' && <span className="hand-helper-line" />}
+          <div className={styles['hour-hand']} />
+          {tracking === 'hours' && (
+            <span className={styles['hand-helper-line']} />
+          )}
         </button>
         <button
-          className="hand-button"
+          className={styles['hand-button']}
           style={{
             transform: `rotate(${minutesHand}deg)`
           }}
           onMouseDown={() => setTracking('minutes')}
           onTouchStart={() => setTracking('minutes')}
         >
-          <div className="minute-hand" />
-          {tracking === 'minutes' && <span className="hand-helper-line" />}
+          <div className={styles['minute-hand']} />
+          {tracking === 'minutes' && (
+            <span className={styles['hand-helper-line']} />
+          )}
         </button>
         <div
-          className="seconds-hand"
+          className={styles['seconds-hand']}
           style={{
             transform: `rotate(${secondsHand}deg)`,
             // Don't animate at 12 (0 degrees) as this causes flicker
@@ -87,10 +92,10 @@ function Clock({
         />
       </div>
       <div>
-        <span className="hour h3">3</span>
-        <span className="hour h6">6</span>
-        <span className="hour h9">9</span>
-        <span className="hour h12">12</span>
+        <span className={[styles.hour, styles.h3].join(' ')}>3</span>
+        <span className={[styles.hour, styles.h6].join(' ')}>6</span>
+        <span className={[styles.hour, styles.h9].join(' ')}>9</span>
+        <span className={[styles.hour, styles.h12].join(' ')}>12</span>
       </div>
       {renderDialLines()}
     </div>
@@ -103,7 +108,7 @@ function renderDialLines() {
     dialLines.push(
       <div
         key={i}
-        className="diallines"
+        className={styles.diallines}
         style={{ transform: `rotate(${6 * i}deg)` }}
       />
     )

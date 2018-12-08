@@ -19,7 +19,7 @@ import React, { useState, useEffect } from 'react'
 import './App.css'
 import Overlay from './Overlay'
 import Button from './Button'
-import Clock from './Clock/Clock'
+import Clock from './Clock'
 
 const INIT = generateState()
 
