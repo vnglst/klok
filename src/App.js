@@ -1,6 +1,17 @@
 /*
 
-CSS + HTML inspired by: https://codepen.io/vaskopetrov/pen/yVEXjz
+Credits:
+- CSS + HTML inspired by: https://codepen.io/vaskopetrov/pen/yVEXjz
+- Also Wes Bos: https://www.youtube.com/watch?v=xu87YWbr4X0
+
+Supports:
+- PWA
+- app like mobile experience
+
+Uses:
+- Netlify
+- create-react-app v2
+- all new React hooks
 
 */
 
@@ -16,19 +27,20 @@ const getSecondsInDegrees = () => {
 }
 
 const timeToDigitalStr = (hours, minutes) => {
-  return `${hours}:${minutes}`
+  const minutesStr = `${minutes}`.padStart(2, '0')
+  return `${hours}:${minutesStr}`
 }
 
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = this.initialState()
+    this.state = this.generateInitialState()
   }
 
-  initialState() {
+  generateInitialState() {
     return {
       expectedHours: Math.round(Math.random() * 12 + 1), // hours [1 - 12]
-      expectedMinutes: Math.round(Math.random() * 60), // minutes [0 - 59]
+      expectedMinutes: 0, // minutes [0 - 59]
       hoursHand: Math.round(Math.random() * 360), // in degrees
       minutesHand: Math.round(Math.random() * 360), // in degrees
       secondsHand: getSecondsInDegrees(),
@@ -43,7 +55,7 @@ class App extends Component {
   }
 
   resetState = () => {
-    this.setState(this.initialState())
+    this.setState(this.generateInitialState())
   }
 
   handleMouseMove(e) {
@@ -62,6 +74,7 @@ class App extends Component {
     // don't update hands if none selected
     if (tracking === 'none') return
 
+    // calculate x and y based on origin in centre of clock
     const { clientX, clientY } = position
     const { x, y, width, height } = this.origin.getBoundingClientRect()
     const originX = Math.round(x + width / 2)
@@ -71,7 +84,7 @@ class App extends Component {
 
     let angle = Math.atan2(absX, absY) * (180 / Math.PI)
 
-    // snap to dial line grid
+    // snap to dial lines
     angle = Math.round(angle / 6) * 6
 
     // convert degrees to positive range [0 - 360)
@@ -135,13 +148,11 @@ class App extends Component {
     } = this.state
 
     const hoursStyle = {
-      transform: `rotate(${hoursHand}deg)`,
-      boxShadow: tracking === 'hours' ? `0 0 1pt 1pt red` : 'none'
+      transform: `rotate(${hoursHand}deg)`
     }
 
     const minutesStyle = {
-      transform: `rotate(${minutesHand}deg)`,
-      boxShadow: tracking === 'minutes' ? `0 0 1pt 1pt red` : 'none'
+      transform: `rotate(${minutesHand}deg)`
     }
 
     const secondsStyle = {
@@ -163,7 +174,7 @@ class App extends Component {
           </Overlay>
         )}
         <div className="app">
-          <div className="info">
+          <div className="question">
             <p>
               set the time to{' '}
               <b>{timeToDigitalStr(expectedHours, expectedMinutes)}</b>
@@ -179,28 +190,32 @@ class App extends Component {
             <div className="dot" ref={el => (this.origin = el)} />
             <div>
               <button
-                className="hour-hand"
+                className="hand-button"
                 style={hoursStyle}
                 onMouseDown={e => this.startHandTracking('hours')}
                 onTouchStart={e => this.startHandTracking('hours')}
               >
-                {tracking === 'hours' && <span className="hours-line" />}
+                <div className="hour-hand" />
+                {tracking === 'hours' && <span className="hand-helper-line" />}
               </button>
               <button
-                className="minute-hand"
+                className="hand-button"
                 style={minutesStyle}
                 onMouseDown={e => this.startHandTracking('minutes')}
                 onTouchStart={e => this.startHandTracking('minutes')}
               >
-                {tracking === 'minutes' && <span className="minutes-line" />}
+                <div className="minute-hand" />
+                {tracking === 'minutes' && (
+                  <span className="hand-helper-line" />
+                )}
               </button>
               <div className="second-hand" style={secondsStyle} />
             </div>
             <div>
-              <span className="h3">3</span>
-              <span className="h6">6</span>
-              <span className="h9">9</span>
-              <span className="h12">12</span>
+              <span className="hour h3">3</span>
+              <span className="hour h6">6</span>
+              <span className="hour h9">9</span>
+              <span className="hour h12">12</span>
             </div>
             {this.renderDialLines()}
           </div>

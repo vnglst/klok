@@ -1,3 +1,4 @@
+/* fixed background container to disable view scrolling on mobile */
 .background {
   position: fixed;
   left: 0;
@@ -42,15 +43,16 @@
   box-shadow: 0 2px 4px -1px black;
 }
 
-button {
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
-button:focus {
-  /* TODO: Fix a11y! ;-) */
-  outline: none;
+.hand-button {
+  position: absolute;
+  z-index: 5;
+  width: 40px;
+  height: 150px;
+  background: inherit;
+  top: 0px;
+  left: 50%;
+  margin-left: -20px;
+  transform-origin: 50% 150px;
 }
 
 .hour-hand {
@@ -59,28 +61,10 @@ button:focus {
   width: 20px;
   height: 65px;
   background: #333;
-  top: 79px;
-  transform-origin: 50% 72px;
-  left: 50%;
-  margin-left: -10px;
+  left: 10px;
+  margin-top: 10px;
   border-top-left-radius: 50%;
   border-top-right-radius: 50%;
-}
-
-.hours-line {
-  position: absolute;
-  width: 0px;
-  height: 78px;
-  top: -78px;
-  border: 0.5px dashed red;
-}
-
-.minutes-line {
-  position: absolute;
-  width: 0px;
-  height: 42px;
-  top: -42px;
-  border: 0.5px dashed red;
 }
 
 .minute-hand {
@@ -89,12 +73,18 @@ button:focus {
   width: 18px;
   height: 100px;
   background: #666;
-  top: 46px;
-  left: 50%;
-  margin-left: -9px;
+  left: 11px;
+  margin-top: -25px;
   border-top-left-radius: 50%;
   border-top-right-radius: 50%;
-  transform-origin: 50% 105px;
+}
+
+.hand-helper-line {
+  position: absolute;
+  width: 0px;
+  height: 100%;
+  top: 0px;
+  border: 0.5px dashed red;
 }
 
 .second-hand {
@@ -112,7 +102,7 @@ button:focus {
   transition: transform 0.2s cubic-bezier(0.4, 2.08, 0.55, 0.44);
 }
 
-span {
+.hour {
   display: inline-block;
   position: absolute;
   color: #333;
@@ -164,7 +154,7 @@ span {
   transform-origin: 50% 150px;
 }
 
-.info {
+.question {
   margin-top: 50px;
   width: 300px;
   border-radius: 7px;
