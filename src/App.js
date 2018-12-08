@@ -2,7 +2,6 @@
 
 CSS + HTML inspired by: https://codepen.io/vaskopetrov/pen/yVEXjz
 
-
 */
 
 import React, { Component } from 'react'
@@ -16,6 +15,10 @@ const getSecondsInDegrees = () => {
   return seconds * 6
 }
 
+const timeToDigitalStr = (hours, minutes) => {
+  return `${hours}:${minutes}`
+}
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -24,12 +27,12 @@ class App extends Component {
 
   initialState() {
     return {
-      expectedHours: Math.round(Math.random() * 12 + 1),
-      expectedMinutes: 0,
-      hoursHand: Math.round(Math.random() * 360),
-      minutesHand: Math.round(Math.random() * 360),
+      expectedHours: Math.round(Math.random() * 12 + 1), // hours [1 - 12]
+      expectedMinutes: Math.round(Math.random() * 60), // minutes [0 - 59]
+      hoursHand: Math.round(Math.random() * 360), // in degrees
+      minutesHand: Math.round(Math.random() * 360), // in degrees
       secondsHand: getSecondsInDegrees(),
-      trackHand: 'none'
+      tracking: 'none'
     }
   }
 
@@ -54,10 +57,10 @@ class App extends Component {
   }
 
   handleHandTracking(position) {
-    const { trackHand } = this.state
+    const { tracking } = this.state
 
     // don't update hands if none selected
-    if (trackHand === 'none') return
+    if (tracking === 'none') return
 
     const { clientX, clientY } = position
     const { x, y, width, height } = this.origin.getBoundingClientRect()
@@ -65,24 +68,25 @@ class App extends Component {
     const originY = Math.round(y + height / 2)
     const absX = clientX - originX
     const absY = -(clientY - originY)
+
     let angle = Math.atan2(absX, absY) * (180 / Math.PI)
 
-    // convert degrees to positive
-    if (angle < 0) angle += 360
-
-    // snap to grid
+    // snap to dial line grid
     angle = Math.round(angle / 6) * 6
 
-    if (trackHand === 'hours') this.setState({ hoursHand: angle })
-    if (trackHand === 'minutes') this.setState({ minutesHand: angle })
+    // convert degrees to positive range [0 - 360)
+    angle = (angle + 360) % 360
+
+    if (tracking === 'hours') this.setState({ hoursHand: angle })
+    if (tracking === 'minutes') this.setState({ minutesHand: angle })
   }
 
   startHandTracking(handStr) {
-    this.setState({ trackHand: handStr })
+    this.setState({ tracking: handStr })
   }
 
   stopHandTracking(e) {
-    this.setState({ trackHand: 'none' })
+    this.setState({ tracking: 'none' })
   }
 
   renderDialLines() {
@@ -103,24 +107,20 @@ class App extends Component {
     const {
       hoursHand,
       minutesHand,
-      trackHand,
+      tracking,
       expectedHours,
       expectedMinutes
     } = this.state
 
     // if user is still dragging hands, she's not done yet
-    if (trackHand !== 'none') return false
+    if (tracking !== 'none') return false
 
     const expectedHoursInDegrees = expectedHours * 30
-
-    const isWithinMargin = (angle1, angle2, margin) => {
-      const diff = 180 - Math.abs(Math.abs(angle1 - angle2) - 180)
-      return diff <= margin
-    }
+    const expectedMinutesInDegrees = expectedMinutes * 6
 
     return (
-      isWithinMargin(minutesHand, expectedMinutes, 5) &&
-      isWithinMargin(hoursHand, expectedHoursInDegrees, 5)
+      expectedHoursInDegrees === hoursHand &&
+      expectedMinutesInDegrees === minutesHand
     )
   }
 
@@ -129,18 +129,19 @@ class App extends Component {
       hoursHand,
       minutesHand,
       secondsHand,
-      trackHand,
-      expectedHours
+      tracking,
+      expectedHours,
+      expectedMinutes
     } = this.state
 
     const hoursStyle = {
       transform: `rotate(${hoursHand}deg)`,
-      boxShadow: trackHand === 'hours' ? `0 0 3pt 1pt red` : 'none'
+      boxShadow: tracking === 'hours' ? `0 0 1pt 1pt red` : 'none'
     }
 
     const minutesStyle = {
       transform: `rotate(${minutesHand}deg)`,
-      boxShadow: trackHand === 'minutes' ? `0 0 3pt 1pt red` : 'none'
+      boxShadow: tracking === 'minutes' ? `0 0 1pt 1pt red` : 'none'
     }
 
     const secondsStyle = {
@@ -164,7 +165,8 @@ class App extends Component {
         <div className="app">
           <div className="info">
             <p>
-              set the time to <b>{expectedHours} O'Clock</b>
+              set the time to{' '}
+              <b>{timeToDigitalStr(expectedHours, expectedMinutes)}</b>
             </p>
           </div>
           <div
@@ -182,7 +184,7 @@ class App extends Component {
                 onMouseDown={e => this.startHandTracking('hours')}
                 onTouchStart={e => this.startHandTracking('hours')}
               >
-                {trackHand === 'hours' && <span className="hours-line" />}
+                {tracking === 'hours' && <span className="hours-line" />}
               </button>
               <button
                 className="minute-hand"
@@ -190,7 +192,7 @@ class App extends Component {
                 onMouseDown={e => this.startHandTracking('minutes')}
                 onTouchStart={e => this.startHandTracking('minutes')}
               >
-                {trackHand === 'minutes' && <span className="minutes-line" />}
+                {tracking === 'minutes' && <span className="minutes-line" />}
               </button>
               <div className="second-hand" style={secondsStyle} />
             </div>
