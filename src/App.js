@@ -17,11 +17,11 @@ Supports:
 */
 
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
 
 import Overlay from './Overlay'
 import Button from './Button'
 import Clock from './Clock'
+import styles from './App.module.css'
 
 const INIT = generateState()
 
@@ -35,40 +35,6 @@ function generateState() {
     tracking: 'none'
   }
 }
-
-/* fixed background container to disable view scrolling on mobile */
-const Background = styled.div`
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-color: #ffffff;
-  background-image: url("data:image/svg+xml,%3Csvg width='42' height='44' viewBox='0 0 42 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Page-1' fill='none' fill-rule='evenodd'%3E%3Cg id='brick-wall' fill='%23000000' fill-opacity='0.12'%3E%3Cpath d='M0 0h42v44H0V0zm1 1h40v20H1V1zM0 23h20v20H0V23zm22 0h20v20H22V23z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-`
-
-const AppContent = styled.div`
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  height: 100%;
-`
-
-const Question = styled.div`
-  margin-top: 50px;
-  width: 300px;
-  border-radius: 7px;
-  text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #000;
-  font-size: 18px;
-  letter-spacing: 2px;
-  border: 1px solid black;
-  background: white;
-`
 
 function App() {
   const [expectedHours, setExpectedHours] = useState(INIT.expectedHours)
@@ -109,19 +75,19 @@ function App() {
   }
 
   return (
-    <Background>
+    <div className={styles['background']}>
       {isDone() && (
         <Overlay>
           <Button onClick={resetState}>Well done!</Button>
         </Overlay>
       )}
-      <AppContent>
-        <Question>
+      <div className={styles['app-content']}>
+        <div className={styles['question']}>
           <p>
             set the time to{' '}
             <b>{timeToDigitalStr(expectedHours, expectedMinutes)}</b>
           </p>
-        </Question>
+        </div>
         <Clock
           setTracking={setTracking}
           setHoursHand={setHoursHand}
@@ -131,8 +97,8 @@ function App() {
           secondsHand={secondsHand}
           tracking={tracking}
         />
-      </AppContent>
-    </Background>
+      </div>
+    </div>
   )
 }
 
