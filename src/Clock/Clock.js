@@ -64,6 +64,7 @@ function Clock({
           onMouseDown={() => setTracking('hours')}
           onTouchStart={() => setTracking('hours')}
         >
+          <span className="visually-hidden">minutes hand</span>
           <div className={styles['hour-hand']} />
           {tracking === 'hours' && (
             <span className={styles['hand-helper-line']} />
@@ -77,6 +78,7 @@ function Clock({
           onMouseDown={() => setTracking('minutes')}
           onTouchStart={() => setTracking('minutes')}
         >
+          <span className="visually-hidden">minutes hand</span>
           <div className={styles['minute-hand']} />
           {tracking === 'minutes' && (
             <span className={styles['hand-helper-line']} />
