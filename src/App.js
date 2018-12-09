@@ -3,6 +3,7 @@
 Credits:
 - CSS + HTML inspired by: https://codepen.io/vaskopetrov/pen/yVEXjz
 - Also: Wes Bos: https://www.youtube.com/watch?v=xu87YWbr4X0
+- Pattern: https://www.heropatterns.com/
 
 Uses:
 - Netlify
@@ -26,7 +27,7 @@ const INIT = generateState()
 
 function generateState() {
   return {
-    expectedHours: Math.round(Math.random() * 12 + 1), // hours [1 - 12]
+    expectedHours: Math.round(Math.random() * 12 + 1), // hours [0 - 12]
     expectedMinutes: 0, // minutes [0 - 59]
     hoursHand: Math.round(Math.random() * 360), // in degrees
     minutesHand: Math.round(Math.random() * 360), // in degrees
@@ -42,6 +43,8 @@ const Background = styled.div`
   right: 0;
   top: 0;
   bottom: 0;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg width='42' height='44' viewBox='0 0 42 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Page-1' fill='none' fill-rule='evenodd'%3E%3Cg id='brick-wall' fill='%23000000' fill-opacity='0.12'%3E%3Cpath d='M0 0h42v44H0V0zm1 1h40v20H1V1zM0 23h20v20H0V23zm22 0h20v20H22V23z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 `
 
 const AppContent = styled.div`
@@ -95,7 +98,8 @@ function App() {
     // if user is still dragging hands, she's not done yet
     if (tracking !== 'none') return false
 
-    const expectedHoursInDegrees = expectedHours * 30
+    // 12 'o clock = 360 = 0 degrees
+    const expectedHoursInDegrees = (expectedHours * 30) % 360
     const expectedMinutesInDegrees = expectedMinutes * 6
 
     return (

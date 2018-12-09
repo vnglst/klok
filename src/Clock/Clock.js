@@ -10,7 +10,7 @@ function Clock({
   secondsHand,
   tracking
 }) {
-  const origin = useRef(null)
+  const clockFace = useRef(null)
 
   const handleMouseMove = e => {
     const { clientX, clientY } = e
@@ -28,7 +28,7 @@ function Clock({
 
     // calculate x and y based on origin in centre of clock
     const { clientX, clientY } = position
-    const { x, y, width, height } = origin.current.getBoundingClientRect()
+    const { x, y, width, height } = clockFace.current.getBoundingClientRect()
     const originX = Math.round(x + width / 2)
     const originY = Math.round(y + height / 2)
     const absX = clientX - originX
@@ -48,28 +48,16 @@ function Clock({
 
   return (
     <div
-      className={styles.clock}
+      className={styles['clock-face']}
       onMouseUp={() => setTracking('none')}
       onTouchEnd={() => setTracking('none')}
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
+      ref={clockFace}
     >
-      <div className={styles.dot} ref={origin} />
+      <div className={styles['hands-dot']} />
+      <div className={styles['centre-dot']} />
       <div>
-        <button
-          className={styles['hand-button']}
-          style={{
-            transform: `rotate(${hoursHand}deg)`
-          }}
-          onMouseDown={() => setTracking('hours')}
-          onTouchStart={() => setTracking('hours')}
-        >
-          <span className="visually-hidden">minutes hand</span>
-          <div className={styles['hour-hand']} />
-          {tracking === 'hours' && (
-            <span className={styles['hand-helper-line']} />
-          )}
-        </button>
         <button
           className={styles['hand-button']}
           style={{
@@ -79,8 +67,26 @@ function Clock({
           onTouchStart={() => setTracking('minutes')}
         >
           <span className="visually-hidden">minutes hand</span>
-          <div className={styles['minute-hand']} />
+          <div className={styles['minute-hand']}>
+            <div className={styles['hand-ball']} />
+          </div>
           {tracking === 'minutes' && (
+            <span className={styles['hand-helper-line']} />
+          )}
+        </button>
+        <button
+          className={styles['hand-button']}
+          style={{
+            transform: `rotate(${hoursHand}deg)`
+          }}
+          onMouseDown={() => setTracking('hours')}
+          onTouchStart={() => setTracking('hours')}
+        >
+          <span className="visually-hidden">hours hand</span>
+          <div className={styles['hour-hand']}>
+            <div className={styles['hand-ball']} />
+          </div>
+          {tracking === 'hours' && (
             <span className={styles['hand-helper-line']} />
           )}
         </button>
@@ -99,14 +105,14 @@ function Clock({
         <span className={[styles.hour, styles.h9].join(' ')}>9</span>
         <span className={[styles.hour, styles.h12].join(' ')}>12</span>
       </div>
-      {renderDialLines()}
+      <div>{renderDialLines()}</div>
     </div>
   )
 }
 
 function renderDialLines() {
   const dialLines = []
-  for (let i = -1; i < 59; i++) {
+  for (let i = 1; i <= 60; i++) {
     dialLines.push(
       <div
         key={i}
