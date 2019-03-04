@@ -15,7 +15,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "verify": "yarn test; yarn build; yarn cypress:ci",
-    "cypress:ci": "cypress run --record --key d9fcfab5-00ab-4c62-900a-80aefc8e3117",
+    "cypress:ci": "cypress run --record --key 45fb34f5-6f20-434a-8671-d3df31353354",
     "cypress:open": "cypress open"
   },
   "eslintConfig": {
