@@ -1,27 +1,38 @@
 {
   "name": "klok",
   "version": "0.1.0",
-  "private": true,
+  "license": "MIT",
   "dependencies": {
+    "cypress": "^3.1.5",
     "react": "^16.7.0-alpha",
     "react-dom": "^16.7.0-alpha ",
-    "react-scripts": "2.1.1",
-    "styled-components": "^4.1.2"
+    "react-scripts": "2.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "deploy": "yarn build; netlify deploy --dir=./build --prod",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "verify": "yarn test; yarn build; yarn cypress:ci",
+    "cypress:ci": "cypress run --record --key d9fcfab5-00ab-4c62-900a-80aefc8e3117",
+    "cypress:open": "cypress open"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
   "browserslist": [
-    ">0.2%",
+    ">1%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "cz-conventional-changelog": "2.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
