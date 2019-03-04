@@ -59,6 +59,7 @@ function Clock({
       <div className={styles['centre-dot']} />
       <div>
         <button
+          data-test-id="minutes-hand"
           className={styles['hand-button']}
           style={{
             transform: `rotate(${minutesHand}deg)`
@@ -75,6 +76,7 @@ function Clock({
           )}
         </button>
         <button
+          data-test-id="hours-hand"
           className={styles['hand-button']}
           style={{
             transform: `rotate(${hoursHand}deg)`
