@@ -1,55 +1,21 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuGroup,
-  MenuItem,
-  MenuList,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  useDisclosure,
-} from '@chakra-ui/react'
+import { Box, Flex, Heading, useDisclosure } from '@chakra-ui/react'
 import { default as React, FC, useEffect, useState } from 'react'
-import { GiCog, GiLightBulb } from 'react-icons/gi'
-import styles from './App.module.css'
-import Clock from './Clock/Clock'
+import Clock from './components/Clock'
+import NextGameModal from './components/NextGameModal'
+import Settings from './components/Settings'
 import { usePersist } from './hooks'
-
-function getSecondsInDegrees() {
-  const now = new Date()
-  const seconds = now.getSeconds()
-  return seconds * 6
-}
-
-function timeToDigitalStr(hours: number, minutes: number) {
-  const minutesStr = `${minutes}`.padStart(2, '0')
-  return `${hours}:${minutesStr}`
-}
-
-function generateState() {
-  return {
-    expectedHours: Math.round(Math.random() * 12 + 1), // hours [0 - 12]
-    expectedMinutes: (Math.round(Math.random() * 4 + 1) * 15) % 60, // minutes [0 - 59]
-    hoursHand: Math.round(Math.random() * 360), // in degrees
-    minutesHand: Math.round(Math.random() * 360), // in degrees
-    secondsHand: getSecondsInDegrees(),
-    tracking: 'none',
-  }
-}
-
-const INIT = generateState()
+import {
+  generateState,
+  getPoints,
+  getSecondsInDegrees,
+  Levels,
+  timeToDigitalStr,
+} from './utils'
 
 const App: FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [level, setLevel] = usePersist('klok-level', 'hours' as Levels)
+  const INIT = generateState(level)
   const [expectedHours, setExpectedHours] = useState(INIT.expectedHours)
   const [expectedMinutes, setExpectedMinutes] = useState(INIT.expectedMinutes)
   const [hoursHand, setHoursHand] = useState(INIT.hoursHand)
@@ -58,7 +24,7 @@ const App: FC = () => {
   const [tracking, setTracking] = useState(INIT.tracking)
   const [points, setPoints] = usePersist('klok-points', 0)
 
-  const pointsInc = 1
+  const pointsEarned = getPoints(level)
 
   useEffect(() => {
     setInterval(() => {
@@ -82,113 +48,52 @@ const App: FC = () => {
     }
   }, [expectedHours, expectedMinutes, hoursHand, minutesHand, tracking, onOpen])
 
-  const handleNextGame = () => {
-    setPoints(points + pointsInc)
-    const newState = generateState()
+  const handleModalClose = () => {
+    setPoints(points + pointsEarned)
+    startNewGame()
+    onClose()
+  }
+
+  const handleSetLevel = (level: Levels) => {
+    setLevel(level)
+    startNewGame(level)
+  }
+
+  const startNewGame = (newLevel?: Levels) => {
+    const newState = generateState(newLevel || level)
     setExpectedHours(newState.expectedHours)
     setExpectedMinutes(newState.expectedMinutes)
     setHoursHand(newState.hoursHand)
     setMinutesHand(newState.minutesHand)
     setSecondsHand(newState.secondsHand)
     setTracking(newState.tracking)
-    onClose()
   }
 
   return (
-    <div className={styles['background']}>
-      {/* {!isDone() && (
-        <Overlay>
-          <Flex
-            flexDir="column"
-            justifyItems="center"
-            justifyContent="center"
-            alignContent="center"
-            maxW="lg"
-            borderRadius="lg"
-            overflow="hidden"
-            shadow="xl"
-            p={24}
-          >
-            <Text>
-              Goed zo! Je hebt {pointsInc}
-              <Box as={GiLightBulb} color="yellow.400" /> verdiend.
-            </Text>
-            <Button colorScheme="blue" size="lg" onClick={handleNextGame} p={6}>
-              Volgende klok!
-            </Button>
-          </Flex>
-        </Overlay>
-      )} */}
-
-      <Modal
-        closeOnOverlayClick={false}
+    <Box
+      position="fixed"
+      left="0"
+      right="0"
+      top="0"
+      bottom="0"
+      backgroundColor="#ffffff"
+      backgroundImage={`url("data:image/svg+xml,%3Csvg width='42' height='44' viewBox='0 0 42 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.12'%3E%3Cpath d='M0 0h42v44H0V0zm1 1h40v20H1V1zM0 23h20v20H0V23zm22 0h20v20H22V23z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`}
+    >
+      <NextGameModal
         isOpen={isOpen}
-        onClose={handleNextGame}
-        size="xl"
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader fontSize="3xl" textAlign="center">
-            Goed gedaan!
-          </ModalHeader>
-          <ModalBody textAlign="center">
-            <Box
-              mt={6}
-              px="auto"
-              width="100%"
-              size={75}
-              as={GiLightBulb}
-              color="yellow.400"
-            />
-            <Text textAlign="center" fontSize="lg" my={10}>
-              Je hebt de goede tijd geselecteerd.
-              <br />
-              Daarmee heb je <b>{pointsInc}</b> lampje(s) verdiend!
-            </Text>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" size="lg" onClick={handleNextGame}>
-              Volgende klok!
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      <Flex ml="auto" zIndex="99" p={6}>
-        <Menu>
-          <MenuButton shadow="xl" as={Button} colorScheme="pink">
-            <GiCog />
-          </MenuButton>
-          <MenuList>
-            <MenuGroup title="Stats">
-              <MenuItem display="flex" justifyContent="space-between">
-                Score
-                <Flex alignItems="center" fontSize="xs" textColor="gray.800">
-                  <Box as={GiLightBulb} color="yellow.400" />
-                  <Text ml={2}>{points}</Text>
-                </Flex>
-              </MenuItem>
-            </MenuGroup>
-            <MenuDivider />
-            <MenuGroup title="Instellingen">
-              <MenuItem>Uren</MenuItem>
-              <MenuItem>Halfuren</MenuItem>
-              <MenuItem>Kwartieren</MenuItem>
-              <MenuItem>Minuten</MenuItem>
-            </MenuGroup>
-          </MenuList>
-        </Menu>
+        onClose={handleModalClose}
+        pointsEarned={pointsEarned}
+      />
+      <Flex ml="auto" p={6}>
+        <Settings points={points} setLevel={handleSetLevel} level={level} />
       </Flex>
-
       <Flex p={2}>
-        <Heading width="100%" as="h1" textAlign="center" lineHeight={1.6}>
+        <Heading width="100%" as="h1" fontWeight="900" textAlign="center">
           stel de tijd in op
           <br />
           {timeToDigitalStr(expectedHours, expectedMinutes)}
         </Heading>
       </Flex>
-
       <Clock
         setTracking={setTracking}
         setHoursHand={setHoursHand}
@@ -198,7 +103,7 @@ const App: FC = () => {
         secondsHand={secondsHand}
         tracking={tracking}
       />
-    </div>
+    </Box>
   )
 }
 

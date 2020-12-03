@@ -15,12 +15,7 @@ body {
   font-display: auto;
 }
 
-/* disable default button styling */
-button {
-  margin: 0;
-  padding: 0;
-  border: none;
-}
+
 
 button:focus {
   /* TODO: Fix a11y! ;-) */

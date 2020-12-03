@@ -75,6 +75,12 @@ const Clock: FC<ClockProps> = ({
       <div className={styles['hands-dot']} />
       <div className={styles['centre-dot']} />
       <div>
+        <div>
+          <span className={[styles.hour, styles.h3].join(' ')}>3</span>
+          <span className={[styles.hour, styles.h6].join(' ')}>6</span>
+          <span className={[styles.hour, styles.h9].join(' ')}>9</span>
+          <span className={[styles.hour, styles.h12].join(' ')}>12</span>
+        </div>
         <button
           data-test-id="minutes-hand"
           className={styles['hand-button']}
@@ -118,12 +124,7 @@ const Clock: FC<ClockProps> = ({
           }}
         />
       </div>
-      <div>
-        <span className={[styles.hour, styles.h3].join(' ')}>3</span>
-        <span className={[styles.hour, styles.h6].join(' ')}>6</span>
-        <span className={[styles.hour, styles.h9].join(' ')}>9</span>
-        <span className={[styles.hour, styles.h12].join(' ')}>12</span>
-      </div>
+
       <div>
         <DialLines />
       </div>
