@@ -1,5 +1,6 @@
 import { Box, Flex, Heading, useDisclosure } from '@chakra-ui/react'
 import { default as React, FC, useEffect, useState } from 'react'
+import useSound from 'use-sound'
 import Clock from './components/Clock'
 import NextGameModal from './components/NextGameModal'
 import Settings from './components/Settings'
@@ -23,6 +24,7 @@ const App: FC = () => {
   const [secondsHand, setSecondsHand] = useState(INIT.secondsHand)
   const [tracking, setTracking] = useState(INIT.tracking)
   const [points, setPoints] = usePersist('klok-points', 0)
+  const [playCorrectFx] = useSound('/sounds/pepSound5.mp3', { volume: 1 })
 
   const pointsEarned = getPoints(level)
 
@@ -45,8 +47,17 @@ const App: FC = () => {
       expectedMinutesInDegrees === minutesHand
     ) {
       onOpen()
+      playCorrectFx()
     }
-  }, [expectedHours, expectedMinutes, hoursHand, minutesHand, tracking, onOpen])
+  }, [
+    expectedHours,
+    expectedMinutes,
+    hoursHand,
+    minutesHand,
+    tracking,
+    onOpen,
+    playCorrectFx,
+  ])
 
   const handleModalClose = () => {
     setPoints(points + pointsEarned)

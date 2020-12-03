@@ -45,14 +45,13 @@ const NextGameModal: FC<NextGameModalProps> = ({
             color="yellow.400"
           />
           <Text textAlign="center" fontSize="lg" my={10}>
-            Je hebt de goede tijd geselecteerd.
-            <br />
-            Daarmee heb je <b>{pointsEarned}</b> lampje(s) verdiend!
+            Je hebt de goede tijd geselecteerd. Daarmee heb je{' '}
+            <b>{pointsEarned}</b> lampje(s) verdiend!
           </Text>
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="pink" size="md" onClick={onClose}>
+          <Button colorScheme="blue" size="md" onClick={onClose}>
             Volgende klok!
           </Button>
         </ModalFooter>
