@@ -2,6 +2,4 @@
 
 # Klok
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/vnglst/klok.svg)](https://greenkeeper.io/)
-
 Teach your kids to tell the time with this interactive clock.
