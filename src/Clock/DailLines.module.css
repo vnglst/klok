@@ -1,0 +1,14 @@
+.diallines {
+  position: absolute;
+  z-index: 2;
+  width: 2px;
+  height: 15px;
+  background: #171923;
+  left: 50%;
+  transform-origin: 50% 150px;
+}
+
+.diallines:nth-of-type(5n) {
+  width: 4px;
+  height: 25px;
+}

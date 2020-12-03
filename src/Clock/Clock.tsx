@@ -1,34 +1,51 @@
-import React, { useRef } from 'react'
+import React, { FC, MouseEvent, TouchEvent, useRef } from 'react'
 import styles from './Clock.module.css'
+import DialLines from './DailLines'
 
-function Clock({
+export interface ClockProps {
+  setTracking: (s: string) => void
+  setHoursHand: (n: number) => void
+  setMinutesHand: (n: number) => void
+  hoursHand: number
+  minutesHand: number
+  secondsHand: number
+  tracking: string
+}
+
+const Clock: FC<ClockProps> = ({
   setTracking,
   setHoursHand,
   setMinutesHand,
   hoursHand,
   minutesHand,
   secondsHand,
-  tracking
-}) {
-  const clockFace = useRef(null)
+  tracking,
+}) => {
+  const clockFace = useRef<HTMLDivElement>(null)
 
-  const handleMouseMove = e => {
+  const handleMouseMove = (e: MouseEvent) => {
     const { clientX, clientY } = e
     handleHandTracking({ clientX, clientY })
   }
 
-  const handleTouchMove = e => {
+  const handleTouchMove = (e: TouchEvent) => {
     const { clientX, clientY } = e.touches[0]
     handleHandTracking({ clientX, clientY })
   }
 
-  const handleHandTracking = position => {
+  const handleHandTracking = (position: {
+    clientX: number
+    clientY: number
+  }) => {
     // don't update hands if none selected
     if (tracking === 'none') return
 
+    if (!clockFace.current) return
+    const { x, y, width, height } = clockFace.current.getBoundingClientRect()
+
     // calculate x and y based on origin in centre of clock
     const { clientX, clientY } = position
-    const { x, y, width, height } = clockFace.current.getBoundingClientRect()
+
     const originX = Math.round(x + width / 2)
     const originY = Math.round(y + height / 2)
     const absX = clientX - originX
@@ -62,7 +79,7 @@ function Clock({
           data-test-id="minutes-hand"
           className={styles['hand-button']}
           style={{
-            transform: `rotate(${minutesHand}deg)`
+            transform: `rotate(${minutesHand}deg)`,
           }}
           onMouseDown={() => setTracking('minutes')}
           onTouchStart={() => setTracking('minutes')}
@@ -79,7 +96,7 @@ function Clock({
           data-test-id="hours-hand"
           className={styles['hand-button']}
           style={{
-            transform: `rotate(${hoursHand}deg)`
+            transform: `rotate(${hoursHand}deg)`,
           }}
           onMouseDown={() => setTracking('hours')}
           onTouchStart={() => setTracking('hours')}
@@ -97,7 +114,7 @@ function Clock({
           style={{
             transform: `rotate(${secondsHand}deg)`,
             // Don't animate at 12 (0 degrees) as this causes flicker
-            transition: secondsHand === 0 ? 'none' : ''
+            transition: secondsHand === 0 ? 'none' : '',
           }}
         />
       </div>
@@ -107,23 +124,11 @@ function Clock({
         <span className={[styles.hour, styles.h9].join(' ')}>9</span>
         <span className={[styles.hour, styles.h12].join(' ')}>12</span>
       </div>
-      <div>{renderDialLines()}</div>
+      <div>
+        <DialLines />
+      </div>
     </div>
   )
-}
-
-function renderDialLines() {
-  const dialLines = []
-  for (let i = 1; i <= 60; i++) {
-    dialLines.push(
-      <div
-        key={i}
-        className={styles.diallines}
-        style={{ transform: `rotate(${6 * i}deg)` }}
-      />
-    )
-  }
-  return dialLines
 }
 
 export default Clock

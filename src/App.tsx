@@ -16,11 +16,11 @@ Supports:
 
 */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, FC } from 'react'
 
-import Overlay from './Overlay'
-import Button from './Button'
-import Clock from './Clock'
+import Overlay from './Overlay/Overlay'
+import Button from './Button/Button'
+import Clock from './Clock/Clock'
 import styles from './App.module.css'
 
 function getSecondsInDegrees() {
@@ -29,7 +29,7 @@ function getSecondsInDegrees() {
   return seconds * 6
 }
 
-function timeToDigitalStr(hours, minutes) {
+function timeToDigitalStr(hours: number, minutes: number) {
   const minutesStr = `${minutes}`.padStart(2, '0')
   return `${hours}:${minutesStr}`
 }
@@ -47,7 +47,7 @@ function generateState() {
 
 const INIT = generateState()
 
-function App() {
+const App: FC = () => {
   const [expectedHours, setExpectedHours] = useState(INIT.expectedHours)
   const [expectedMinutes, setExpectedMinutes] = useState(INIT.expectedMinutes)
   const [hoursHand, setHoursHand] = useState(INIT.hoursHand)
@@ -112,4 +112,5 @@ function App() {
     </div>
   )
 }
+
 export default App
