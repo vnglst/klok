@@ -3,3 +3,20 @@
 # Klok
 
 Teach your kids to tell the time with this interactive clock.
+
+## Credits
+
+-   CSS + HTML inspired by: https://codepen.io/vaskopetrov/pen/yVEXjz
+-   Also: Wes Bos: https://www.youtube.com/watch?v=xu87YWbr4X0
+-   Pattern: https://www.heropatterns.com/
+
+## Uses
+
+-   Netlify
+-   create-react-app v2
+-   React hooks!
+
+## Supports
+
+-   PWA
+-   app like mobile experience
